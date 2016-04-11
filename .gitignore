@@ -3,5 +3,10 @@
 .project
 .classpath
 .idea
+.js
+.htm
+.css
+.sass
+.less
 /**/*.iml
 CRM-DBDesign.mwb.bak
