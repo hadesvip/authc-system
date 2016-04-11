@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.furious.dao.MenuDao">
+	<resultMap type="com.cn.furious.model.Menu" id="BRM">
+		<result column="parent_id" property="parentId" />
+		<result column="parentName" property="parentName"/>
+		
+	</resultMap>
+	<sql id="baseColumns">
+		 m1.id as id,m1.authc as authc,m1.description as description,
+		 m1.name as name,m1.priority as priority,m1.url as url,m1.parent_id as parent_id
+	</sql>
+	<select id="query" parameterType="com.cn.furious.model.Menu" resultMap="BRM">
+		select * from menu
+		<where>
+			<if test="id != null and id != '' ">
+				and id = #{id}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryChildren" parameterType="com.cn.furious.model.Menu" resultMap="BRM">
+			select * from menu
+		<where>
+			<if test="parentId !=null and parentId != '' ">
+				and parent_id = #{parentId}
+			</if>
+		</where>
+	</select>
+	
+	<!-- m1是儿子,m2是父亲 -->
+	<select id="getAll" resultMap="BRM">
+		select 		  <include refid="baseColumns"/>,
+					   m2.name as parentName
+		from  		  `menu` m1
+		left join     `menu` m2
+		on             m1.parent_id = m2.id
+	</select>
+	
+	<insert id="create" parameterType="com.cn.furious.model.Menu">
+		insert into menu
+		(id,authc,description,name,priority,url,parent_id)
+		values(#{id},#{authc},#{description},#{name},#{priority},#{url},#{parentId})
+	</insert>
+	
+	<delete id="delete">
+		delete from menu
+		where id = #{id}
+	</delete>
+	
+	<delete id="deleteIncludeChildren">
+		delete from menu
+		where id = #{id}
+		or    parent_id = #{id}
+	</delete>
+	
+	<update id="update" parameterType="com.cn.furious.model.Menu">
+		update menu
+		set
+			<if test="authc != null and authc != '' ">
+				authc = #{authc},
+			</if>
+			<if test="description != null and description !='' ">
+				description = #{description},
+			</if>
+			<if test="name != null and name != '' ">
+				name = #{name},
+			</if>
+			<if test="priority != null and priority != '' ">
+				priority = #{priority},
+			</if>
+			<if test="url != null and url != '' ">
+				url = #{url}
+			</if>
+		where id = #{id}
+	</update>
+</mapper>

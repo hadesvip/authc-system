@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.furious.dao.PermissionDao">
+	<resultMap type="com.cn.furious.model.Permission" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="role_id" property="roleId"/>
+		<result column="permission_name" property="permissionName"/>
+	</resultMap>
+
+	<select id="getAll" resultMap="BaseResultMap">
+		select * from permission
+	</select>
+	
+	<insert id="create" parameterType="com.cn.furious.model.Permission">
+		insert into permission
+		(role_id,permission_name)
+		values(#{roleId},#{permissionName})
+	</insert>
+	
+	<select id="query" resultType="String">
+		select permission_name
+		from permission
+		where role_id = #{roleId}
+	</select>
+</mapper>

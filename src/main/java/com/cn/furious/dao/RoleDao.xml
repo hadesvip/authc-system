@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.furious.dao.RoleDao">
+	<resultMap type="com.cn.furious.model.Role" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="role_name" property="roleName"/>
+	</resultMap>
+
+	<select id="query" parameterType="com.cn.furious.model.Role" resultMap="BaseResultMap">
+		select * from role
+		<where>
+			<if test="id != null and id != '' ">
+				id = #{id}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultMap="BaseResultMap">
+		select * from role
+	</select>
+	
+	<insert id="create" parameterType="com.cn.furious.model.Role" useGeneratedKeys="true" keyProperty="id">
+		insert into role
+		(role_name)
+		values(#{roleName})
+	</insert>
+	
+	<update id="update" parameterType="com.cn.furious.model.Role">
+		update role
+		set   
+			   role_name = #{roleName}
+		where  id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from role 
+		where id = #{id}
+	</delete>
+	<delete id="deletePermissions" parameterType="com.cn.furious.model.Role">
+		delete from permission
+		where  role_id = #{id}
+	</delete>
+</mapper>

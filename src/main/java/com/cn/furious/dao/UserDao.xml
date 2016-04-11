@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.furious.dao.UserDao">
+	<resultMap type="com.cn.furious.model.User" id="BRM">
+		<result column="u_id" property="id"/>
+		<result column="u_birthday" property="birthday"/>
+		<result column="u_email" property="email"/>
+		<result column="u_password" property="password"/>
+		<result column="u_phone" property="phone"/>
+		<result column="u_username" property="username"/>
+		<result column="u_realname" property="realname"/>
+		<collection property="roles" ofType="com.cn.furious.model.Role">
+			<result column="r_id" property="id"/>
+			<result column="r_role_name" property="roleName"/>
+			<collection property="permissions" ofType="com.cn.furious.model.Permission">
+				<result column="p_id" property="id"/>
+				<result column="p_permission_name" property="permissionName"/>
+				<result column="p_role_id" property="roleId"/>
+				<result column="permission_name" property="permissionName"/>
+			</collection>
+		</collection>
+	</resultMap>
+	<sql id="userColumn">
+		u.id as u_id,u.birthday as u_birthday,u.email as u_email,u.password as u_password,u.phone as u_phone,u.username as u_username
+		,u.realname as u_realname
+	</sql>
+	<sql id="roleColumn">
+		r.id as r_id,r.role_name as r_role_name
+	</sql>
+	<sql id="permissionColumn">
+		p.id as p_id,p.permission_name as p_permission_name,p.role_id as p_role_id
+	</sql>
+
+	<select id="query" parameterType="com.cn.furious.model.User"
+		resultMap="BRM">
+		select 
+		<include refid="userColumn"/>,
+		<include refid="roleColumn"/>,
+		<include refid="permissionColumn"/>
+		from user u
+		inner JOIN user_role ur
+		on u.id = ur.user_id
+		INNER JOIN role r
+		on r.id = ur.role_id
+		inner join permission p
+		on r.id = p.role_id
+		<where>
+			<if test="username != null and username != '' ">
+				and username = #{username}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="com.cn.furious.model.User">
+		select * from user
+	</select>
+	<select id="queryById" resultType="com.cn.furious.model.User">
+		select* from user
+		where id = #{id}
+	</select>
+	
+	<insert id="create" parameterType="com.cn.furious.model.User"> 
+		insert into user 
+		(birthday,email,password,phone,username,realname)
+		values(#{birthday},#{email},#{password},#{phone},#{username},#{realname})
+	</insert>
+	<update id="update" parameterType="com.cn.furious.model.User">
+		update user
+		set
+			birthday = #{birthday},
+			email = #{email},
+			password = #{password},
+			phone = #{phone},
+			username = #{username},
+			realname = #{realname}
+		where id = #{id}
+	</update>
+	<delete id="delete">
+		delete from user
+		where id = #{id}
+	</delete>
+	<select id="queryRoles" resultType="com.cn.furious.model.Role">
+		select 		    r.role_name as roleName,r.id as id
+		from  		    user u 
+		inner join      user_role ur
+		on 			    u.id = ur.user_id
+		inner join      role r
+		on              r.id = ur.role_id
+		where           u.id = #{userId}
+	</select>
+	<insert id="saveRole" parameterType="map"> 
+		insert into user_role
+		(role_id,user_id)
+		values(#{roleId},#{userId})
+	</insert>
+</mapper>
